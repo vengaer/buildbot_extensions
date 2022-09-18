@@ -18,15 +18,33 @@ class Docker(shell.ShellCommand):
             "--rm",
             "-t",
             "--net=host",
-            f"-u{os.geteuid()}",
             f"-w={workdir}",
             container,
         ] + command
         super().__init__(**kwargs)
 
 
+class Build(shell.ShellCommand):
+    """Shell wrapper building docker images"""
+
+    name = "docker build"
+
+    def __init__(self, dockerfile, tag, **kwargs):
+        if not (ddir := os.path.dirname(os.path.abspath(dockerfile))):
+            ddir = '.'
+
+        self.command = [
+            "docker",
+            "build",
+            ddir,
+            f"-t{tag}",
+            "--network=host",
+        ]
+        super().__init__(**kwargs)
+
+
 class Prune(shell.ShellCommand):
     """Step removing dangling docker containers"""
 
-    name = "prune"
+    name = "docker prune"
     command = "docker system prune -f"
