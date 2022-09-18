@@ -32,14 +32,11 @@ class Build(shell.ShellCommand):
 
     name = "docker build"
 
-    def __init__(self, dockerfile, tag, **kwargs):
-        if not (ddir := os.path.dirname(os.path.abspath(dockerfile))):
-            ddir = "."
-
+    def __init__(self, tag, path='.', **kwargs):
         self.command = [
             "docker",
             "build",
-            ddir,
+            path,
             f"-t{tag}",
             "--network=host",
         ]
