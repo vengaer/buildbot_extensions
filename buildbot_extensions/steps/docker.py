@@ -12,20 +12,18 @@ class Docker(shell.ShellCommand):
 
     def __init__(self, image, command, workdir=None, **kwargs):
         self._image = image
-        self.command = [
-            "docker",
-            "run",
-            "--rm",
-            "-t",
-            "--net=host",
-            f"-w={workdir}" if workdir is not None else "",
-            image,
-        ] + command
+        self.command = ["docker", "run", "--rm", "-t", "--net=host"]
+
+        if workdir is not None:
+            self.command.append(f"-w={workdir}")
+
+        self.command.append(image)
+        self.command += command
         super().__init__(**kwargs)
 
     @property
     def image(self):
-        ''' Docker image name '''
+        """Docker image name"""
         return self._image
 
 
