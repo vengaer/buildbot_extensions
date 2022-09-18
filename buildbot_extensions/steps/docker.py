@@ -10,7 +10,7 @@ class Docker(shell.ShellCommand):
 
     name = "docker"
 
-    def __init__(self, container, command, workdir, **kwargs):
+    def __init__(self, container, command, workdir=None, **kwargs):
         self._container = container
         self.command = [
             "docker",
@@ -18,7 +18,7 @@ class Docker(shell.ShellCommand):
             "--rm",
             "-t",
             "--net=host",
-            f"-w={workdir}",
+            f"-w={workdir}" if workdir is not None else "",
             container,
         ] + command
         super().__init__(**kwargs)
@@ -31,7 +31,7 @@ class Build(shell.ShellCommand):
 
     def __init__(self, dockerfile, tag, **kwargs):
         if not (ddir := os.path.dirname(os.path.abspath(dockerfile))):
-            ddir = '.'
+            ddir = "."
 
         self.command = [
             "docker",
