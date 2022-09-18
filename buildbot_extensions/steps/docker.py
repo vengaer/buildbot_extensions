@@ -47,9 +47,11 @@ class Build(shell.ShellCommand):
 
 class Prune(shell.ShellCommand):
     """Step removing dangling docker containers"""
-
     name = "docker prune"
-    command = "docker system prune -f"
+
+    def __init__(self, **kwargs):
+        self.command = "docker system prune -f"
+        super().__init__(**kwargs)
 
 
 class Volume(shell.ShellCommand):
