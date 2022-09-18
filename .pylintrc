@@ -1,0 +1,5 @@
+[MAIN]
+
+disable=
+    too-few-public-methods
+
