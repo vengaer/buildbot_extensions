@@ -17,7 +17,7 @@ class Docker(shell.ShellCommand):
 
         if volumes is not None:
             for vol in volumes:
-                self.command.append(f"-v{vol}:/{vol}")
+                self.command.append(f"-v{vol}:/{vol}:Z")
 
         self.command.append(image)
         self.command += command
