@@ -1,7 +1,5 @@
 """ Docker-related buildbot steps """
 
-import os
-
 from buildbot.steps import shell  # pylint: disable=import-error
 
 
@@ -10,12 +8,16 @@ class Docker(shell.ShellCommand):
 
     name = "docker"
 
-    def __init__(self, image, command, workdir=None, **kwargs):
+    def __init__(self, image, command, workdir=None, volumes=None, **kwargs):
         self._image = image
         self.command = ["docker", "run", "--rm", "-t", "--net=host"]
 
         if workdir is not None:
             self.command.append(f"-w={workdir}")
+
+        if volumes is not None:
+            for vol in volumes:
+                self.command.append(f"-v{vol}:/{vol}")
 
         self.command.append(image)
         self.command += command
@@ -32,7 +34,7 @@ class Build(shell.ShellCommand):
 
     name = "docker build"
 
-    def __init__(self, tag, path='.', **kwargs):
+    def __init__(self, tag, path=".", **kwargs):
         self.command = [
             "docker",
             "build",
@@ -48,3 +50,19 @@ class Prune(shell.ShellCommand):
 
     name = "docker prune"
     command = "docker system prune -f"
+
+
+class Volume(shell.ShellCommand):
+    """Create a docker volume"""
+
+    name = "docker volume"
+
+    def __init__(self, name, **kwargs):
+        self._name = name
+        self.command = ["docker", "volume", "create", self._name]
+        super().__init__(**kwargs)
+
+    @property
+    def volume_name(self):
+        """Get name of the volume"""
+        return self._name
