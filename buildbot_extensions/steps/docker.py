@@ -57,12 +57,12 @@ class Volume(shell.ShellCommand):
 
     name = "docker volume"
 
-    def __init__(self, name, **kwargs):
-        self._name = name
-        self.command = ["docker", "volume", "create", self._name]
+    def __init__(self, volume, **kwargs):
+        self._volume = volume
+        self.command = ["docker", "volume", "create", volume]
         super().__init__(**kwargs)
 
     @property
-    def volume_name(self):
+    def volume(self):
         """Get name of the volume"""
-        return self._name
+        return self._volume
