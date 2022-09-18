@@ -1,1 +1,3 @@
-from docker import *
+''' Buildbot extended step support '''
+
+from .docker import *
