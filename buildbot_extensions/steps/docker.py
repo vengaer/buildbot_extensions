@@ -1,6 +1,7 @@
 """ Docker-related buildbot steps """
 
-from buildbot.steps import shell  # pylint: disable=import-error
+from buildbot.steps import shell, shellsequence  # pylint: disable=import-error
+from buildbot.plugins import util  # pylint: disable=import-error
 
 
 class Docker(shell.ShellCommand):
@@ -47,6 +48,7 @@ class Build(shell.ShellCommand):
 
 class Prune(shell.ShellCommand):
     """Step removing dangling docker containers"""
+
     name = "docker prune"
 
     def __init__(self, **kwargs):
@@ -54,15 +56,30 @@ class Prune(shell.ShellCommand):
         super().__init__(**kwargs)
 
 
-class Volume(shell.ShellCommand):
+class Volume(shellsequence.ShellSequence):
     """Create a docker volume"""
 
     name = "docker volume"
 
-    def __init__(self, volume, **kwargs):
+    def __init__(self, volume, permissions=None, image=None, **kwargs):
+        permissions = permissions if permissions else "755"
+        image = image if image is not None else "archlinux:latest"
         self._volume = volume
-        self.command = ["docker", "volume", "create", volume]
-        super().__init__(**kwargs)
+        dpfx = [
+            "docker",
+            "run",
+            "--rm",
+            f"-v{volume}:/{volume}:Z",
+            image,
+            "/bin/sh",
+            "-c",
+        ]
+        commands = [
+            util.ShellArg(["docker", "volume", "create", volume]),
+            util.ShellArg(command=dpfx + [f"touch /{volume}/.init.stamp"]),
+            util.ShellArg(command=dpfx + [f"chmod -R {permissions} /{volume}"]),
+        ]
+        super().__init__(commands=commands, **kwargs)
 
     @property
     def volume(self):
