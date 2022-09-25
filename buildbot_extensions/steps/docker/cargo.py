@@ -1,50 +1,59 @@
+import abc
 from typing import List, Optional
 
 from .shell import ShellCommand
 
 
-class _Generic(ShellCommand):
+class _CargoCmd(ShellCommand, abc.ABC):
+    """Wrapper running generic cargo command in docker container"""
+
     def __init__(
         self,
         image: str,
-        subcmd: str,
         workdir: Optional[str] = None,
         volumes: Optional[List[str]] = None,
         **kwargs,
     ):
         super().__init__(
-            image=image, command=["cargo", subcmd], workdir=workdir, volumes=volumes
+            image=image,
+            command=["cargo", self.subcmd],
+            workdir=workdir,
+            volumes=volumes,
         )
 
-
-class Build(_Generic):
-    def __init__(
-        self,
-        image: str,
-        workdir: Optional[str] = None,
-        volumes: Optional[List[str]] = None,
-        **kwargs,
-    ):
-        super().__init__(image, "build", workdir, volumes, **kwargs)
+    @property
+    @abc.abstractmethod
+    def subcmd(self) -> str:
+        ...
 
 
-class Check(_Generic):
-    def __init__(
-        self,
-        image: str,
-        workdir: Optional[str] = None,
-        volumes: Optional[List[str]] = None,
-        **kwargs,
-    ):
-        super().__init__(image, "check", workdir, volumes, **kwargs)
+class Build(_CargoCmd):
+    name = "Cargo Build"
+
+    @property
+    def subcmd(self) -> str:
+        return "build"
 
 
-class Test(_Generic):
-    def __init__(
-        self,
-        image: str,
-        workdir: Optional[str] = None,
-        volumes: Optional[List[str]] = None,
-        **kwargs,
-    ):
-        super().__init__(image, "test", workdir, volumes, **kwargs)
+class Check(_CargoCmd):
+    name = "Cargo Check"
+
+    @property
+    def subcmd(self) -> str:
+        return "check"
+
+
+class Test(_CargoCmd):
+    name = "Cargo Test"
+
+    @property
+    def subcmd(self) -> str:
+        return "test"
+
+
+class Doc(_CargoCmd):
+    name = "Cargo Doc"
+
+    @property
+    def subcmd(self) -> str:
+        return "doc"
