@@ -1,9 +1,9 @@
 """ Docker-related buildbot steps """
 
+from typing import List, Optional
+
 from buildbot.steps import shell, shellsequence  # pylint: disable=import-error
 from buildbot.plugins import util  # pylint: disable=import-error
-
-from typing import List, Optional
 
 
 class Docker(shell.ShellCommand):
