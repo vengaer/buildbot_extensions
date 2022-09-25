@@ -6,7 +6,7 @@ from buildbot.steps import shell, shellsequence  # pylint: disable=import-error
 from buildbot.plugins import util  # pylint: disable=import-error
 
 
-class Docker(shell.ShellCommand):
+class ShellCommand(shell.ShellCommand):
     """Wrapper for running shell commands inside docker container"""
 
     name = "docker"

@@ -1,9 +1,9 @@
 from typing import List, Optional
 
-from .shell import Docker
+from .shell import ShellCommand
 
 
-class _Generic(Docker):
+class _Generic(ShellCommand):
     def __init__(
         self,
         image: str,
